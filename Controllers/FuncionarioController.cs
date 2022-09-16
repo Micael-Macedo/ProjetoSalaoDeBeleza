@@ -9,24 +9,23 @@ using ProjetoSalaoDeBeleza.Models;
 
 namespace ProjetoSalaoDeBeleza.Controllers
 {
-    public class FuncionariosController : Controller
+    public class FuncionarioController : Controller
     {
         private readonly ProjetoSalaoContext _context;
 
-        public FuncionariosController(ProjetoSalaoContext context)
+        public FuncionarioController(ProjetoSalaoContext context)
         {
             _context = context;
         }
 
-        // GET: Funcionarios
+        // GET: Funcionario
         public async Task<IActionResult> Index()
         {
-              return _context.Funcionarios != null ? 
-                          View(await _context.Funcionarios.ToListAsync()) :
-                          Problem("Entity set 'ProjetoSalaoContext.Funcionarios'  is null.");
+            var projetoSalaoContext = _context.Funcionarios.Include(f => f.Setor);
+            return View(await projetoSalaoContext.ToListAsync());
         }
 
-        // GET: Funcionarios/Details/5
+        // GET: Funcionario/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Funcionarios == null)
@@ -35,6 +34,7 @@ namespace ProjetoSalaoDeBeleza.Controllers
             }
 
             var funcionario = await _context.Funcionarios
+                .Include(f => f.Setor)
                 .FirstOrDefaultAsync(m => m.FuncionarioId == id);
             if (funcionario == null)
             {
@@ -44,18 +44,19 @@ namespace ProjetoSalaoDeBeleza.Controllers
             return View(funcionario);
         }
 
-        // GET: Funcionarios/Create
+        // GET: Funcionario/Create
         public IActionResult Create()
         {
+            ViewData["SetorId"] = new SelectList(_context.Setores, "SetorId", "SetorId");
             return View();
         }
 
-        // POST: Funcionarios/Create
+        // POST: Funcionario/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FuncionarioId,Nome,Funcao,Matricula,TemCNH,Salario")] Funcionario funcionario)
+        public async Task<IActionResult> Create([Bind("FuncionarioId,Nome,Funcao,Matricula,TemCNH,Salario,SetorId")] Funcionario funcionario)
         {
             if (ModelState.IsValid)
             {
@@ -63,10 +64,11 @@ namespace ProjetoSalaoDeBeleza.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["SetorId"] = new SelectList(_context.Setores, "SetorId", "SetorId", funcionario.SetorId);
             return View(funcionario);
         }
 
-        // GET: Funcionarios/Edit/5
+        // GET: Funcionario/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Funcionarios == null)
@@ -79,15 +81,16 @@ namespace ProjetoSalaoDeBeleza.Controllers
             {
                 return NotFound();
             }
+            ViewData["SetorId"] = new SelectList(_context.Setores, "SetorId", "SetorId", funcionario.SetorId);
             return View(funcionario);
         }
 
-        // POST: Funcionarios/Edit/5
+        // POST: Funcionario/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("FuncionarioId,Nome,Funcao,Matricula,TemCNH,Salario")] Funcionario funcionario)
+        public async Task<IActionResult> Edit(int id, [Bind("FuncionarioId,Nome,Funcao,Matricula,TemCNH,Salario,SetorId")] Funcionario funcionario)
         {
             if (id != funcionario.FuncionarioId)
             {
@@ -114,10 +117,11 @@ namespace ProjetoSalaoDeBeleza.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["SetorId"] = new SelectList(_context.Setores, "SetorId", "SetorId", funcionario.SetorId);
             return View(funcionario);
         }
 
-        // GET: Funcionarios/Delete/5
+        // GET: Funcionario/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Funcionarios == null)
@@ -126,6 +130,7 @@ namespace ProjetoSalaoDeBeleza.Controllers
             }
 
             var funcionario = await _context.Funcionarios
+                .Include(f => f.Setor)
                 .FirstOrDefaultAsync(m => m.FuncionarioId == id);
             if (funcionario == null)
             {
@@ -135,7 +140,7 @@ namespace ProjetoSalaoDeBeleza.Controllers
             return View(funcionario);
         }
 
-        // POST: Funcionarios/Delete/5
+        // POST: Funcionario/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

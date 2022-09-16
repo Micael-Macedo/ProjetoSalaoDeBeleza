@@ -13,5 +13,7 @@ namespace ProjetoSalaoDeBeleza.Models
         public string Matricula { get; set; }
         public bool TemCNH { get; set; }
         public double Salario { get; set; }
+        public int SetorId { get; set; }
+        public virtual Setor Setor { get; set; }
     }
 }

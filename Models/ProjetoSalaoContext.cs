@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using ProjetoSalaoDeBeleza.Models;
 
 namespace ProjetoSalaoDeBeleza.Models
 {
@@ -11,5 +12,7 @@ namespace ProjetoSalaoDeBeleza.Models
         public ProjetoSalaoContext(DbContextOptions<ProjetoSalaoContext> options):base(options){}
 
         public DbSet<Funcionario> Funcionarios { get; set; }
+
+        public DbSet<Setor> Setores { get; set; }
     }
 }
